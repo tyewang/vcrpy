@@ -23,8 +23,8 @@ def _find_header(cassette, header):
     return False
 
 
-def test_filter_basic_auth(tmpdir):
-    url = 'http://httpbin.org/basic-auth/user/passwd'
+def test_filter_basic_auth(tmpdir, httpbin):
+    url = httpbin.url + '/basic-auth/user/passwd'
     cass_file = str(tmpdir.join('basic_auth_filter.yaml'))
     my_vcr = vcr.VCR(match_on=['uri', 'method', 'headers'])
     # 2 requests, one with auth failure and one with auth success
@@ -46,8 +46,8 @@ def test_filter_basic_auth(tmpdir):
         assert len(cass) == 2
 
 
-def test_filter_querystring(tmpdir):
-    url = 'http://httpbin.org/?foo=bar'
+def test_filter_querystring(tmpdir, httpbin):
+    url = httpbin.url + '/?foo=bar'
     cass_file = str(tmpdir.join('filter_qs.yaml'))
     with vcr.use_cassette(cass_file, filter_query_parameters=['foo']):
         urlopen(url)
@@ -56,8 +56,8 @@ def test_filter_querystring(tmpdir):
         assert 'foo' not in cass.requests[0].url
 
 
-def test_filter_post_data(tmpdir):
-    url = 'http://httpbin.org/post'
+def test_filter_post_data(tmpdir, httpbin):
+    url = httpbin.url + '/post'
     data = urlencode({'id': 'secret', 'foo': 'bar'}).encode('utf-8')
     cass_file = str(tmpdir.join('filter_pd.yaml'))
     with vcr.use_cassette(cass_file, filter_post_data_parameters=['id']):
@@ -66,8 +66,8 @@ def test_filter_post_data(tmpdir):
         assert b'id=secret' not in cass.requests[0].body
 
 
-def test_filter_callback(tmpdir):
-    url = 'http://httpbin.org/get'
+def test_filter_callback(tmpdir, httpbin):
+    url = httpbin.url + '/get'
     cass_file = str(tmpdir.join('basic_auth_filter.yaml'))
     def before_record_cb(request):
         if request.path != '/get':

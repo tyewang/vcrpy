@@ -36,8 +36,8 @@ import vcr
 import urllib2
 
 with vcr.use_cassette('fixtures/vcr_cassettes/synopsis.yaml'):
-    response = urllib2.urlopen('http://www.iana.org/domains/reserved').read()
-    assert 'Example domains' in response
+    response = urllib2.urlopen('http://httpbin.org/').read()
+    assert 'httpbin' in response
 ```
 
 Run this test once, and VCR.py will record the HTTP request to
@@ -419,6 +419,10 @@ the [boto
 documentation](http://boto.readthedocs.org/en/latest/getting_started.html) for
 how to set this up. I have marked the boto tests as optional in Travis so you
 don't have to worry about them failing if you submit a pull request.
+
+Since VCR.py  uses [pytest-httpbin](https://github.com/kevin1024/pytest-httpbin) for its test suite, you need to set an
+environment variable to use the alternate CA cert bundle for requests.  You
+can just use tox or the `runtests.sh` script to take care of this.
 
 
 ## Logging

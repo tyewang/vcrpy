@@ -32,7 +32,7 @@ python:
 - 3.4
 - pypy
 install:
-- pip install PyYAML pytest pytest-localserver --use-mirrors
+- pip install pytest pytest-localserver pytest-httpbin --use-mirrors
 - if [ $WITH_LIB = "requests1.x" ] ; then pip install requests==1.2.3; fi
 - if [ $WITH_LIB = "requests2.2" ] ; then pip install requests==2.2.1; fi
 - if [ $WITH_LIB = "requests2.3" ] ; then pip install requests==2.3.0; fi
@@ -40,7 +40,7 @@ install:
 - if [ $WITH_LIB = "requests2.5" ] ; then pip install requests==2.5.0; fi
 - if [ $WITH_LIB = "httplib2" ] ; then pip install httplib2; fi
 - if [ $WITH_LIB = "boto" ] ; then pip install boto; fi
-- if [ $WITH_LIB = "urllib31.7" ] ; then pip install certifi urllib3==1.7.1; fi
-- if [ $WITH_LIB = "urllib31.9" ] ; then pip install certifi urllib3==1.9.1; fi
-- if [ $WITH_LIB = "urllib31.10" ] ; then pip install certifi urllib3==1.10.2; fi
-script: python setup.py test
+- if [ $WITH_LIB = "urllib31.7" ] ; then pip install urllib3==1.7.1; fi
+- if [ $WITH_LIB = "urllib31.9" ] ; then pip install urllib3==1.9.1; fi
+- if [ $WITH_LIB = "urllib31.10" ] ; then pip install urllib3==1.10.2; fi
+script: python setup.py install && ./runtests.sh

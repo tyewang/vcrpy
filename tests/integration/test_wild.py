@@ -22,14 +22,14 @@ def test_domain_redirect():
         assert len(cass) == 2
 
 
-def test_flickr_multipart_upload():
+def test_flickr_multipart_upload(httpbin, tmpdir):
     """
     The python-flickr-api project does a multipart
     upload that confuses vcrpy
     """
     def _pretend_to_be_flickr_library():
         content_type, body = "text/plain", "HELLO WORLD"
-        h = httplib.HTTPConnection("httpbin.org")
+        h = httplib.HTTPConnection(httpbin.host, httpbin.port)
         headers = {
             "Content-Type": content_type,
             "content-length": str(len(body))
@@ -40,11 +40,13 @@ def test_flickr_multipart_upload():
         data = r.read()
         h.close()
 
-    with vcr.use_cassette('fixtures/vcr_cassettes/flickr.yaml') as cass:
+    c_file = str(tmpdir.join('fixtures/vcr_cassettes/flicr.yaml'))
+
+    with vcr.use_cassette(c_file) as cass:
         _pretend_to_be_flickr_library()
         assert len(cass) == 1
 
-    with vcr.use_cassette('fixtures/vcr_cassettes/flickr.yaml') as cass:
+    with vcr.use_cassette(c_file) as cass:
         assert len(cass) == 1
         _pretend_to_be_flickr_library()
         assert cass.play_count == 1
@@ -57,10 +59,10 @@ def test_flickr_should_respond_with_200(tmpdir):
         assert r.status_code == 200
 
 
-def test_cookies(tmpdir):
+def test_cookies(tmpdir, httpbin):
     testfile = str(tmpdir.join('cookies.yml'))
     with vcr.use_cassette(testfile):
         s = requests.Session()
-        r1 = s.get("http://httpbin.org/cookies/set?k1=v1&k2=v2")
-        r2 = s.get("http://httpbin.org/cookies")
+        r1 = s.get(httpbin.url + "/cookies/set?k1=v1&k2=v2")
+        r2 = s.get(httpbin.url + "/cookies")
         assert len(r2.json()['cookies']) == 2
